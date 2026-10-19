@@ -68,7 +68,11 @@ Bản đồ diễn biến rừng 2020 lấy từ dịch vụ WFS công khai củ
 
 Thư mục `webapp/` là repo riêng tư **datrich/veudr-web**. Repo cha `LLM_4_deforest` bỏ qua thư mục này (khai báo trong `.git/info/exclude`). Cloudflare Pages đọc repo và phục vụ thư mục `public/` như trang tĩnh, không cần bước build. Mỗi lần `git push` lên nhánh `main`, Cloudflare tự triển khai lại.
 
-Cài đặt một lần trên dashboard Cloudflare (tài khoản đang quản lý smlcloud.online):
+Có hai cách cài trên dashboard Cloudflare (tài khoản đang quản lý smlcloud.online). Repo hỗ trợ cả hai.
+
+**Cách A, Workers (giao diện mặc định hiện nay):** Workers & Pages → Create → Import a repository → `datrich/veudr-web`. Project name **veudr-web** (phải trùng `name` trong `wrangler.jsonc`), Build command để trống, Deploy command `npx wrangler deploy`. Sau khi deploy: Settings → Domains & Routes → Add → Custom domain → `veudr.smlcloud.online`. Cấu hình nằm ở `wrangler.jsonc` (phục vụ tĩnh thư mục `public/`, đường dẫn không tồn tại trả về `404.html`).
+
+**Cách B, Pages:**
 
 1. **Workers & Pages → Create → Pages → Connect to Git** (hoặc *Import an existing Git repository*). Cấp cho ứng dụng Cloudflare trên GitHub quyền đọc repo `datrich/veudr-web`.
 2. Build settings: *Framework preset* **None**, *Build command* **để trống**, *Build output directory* **`public`**, nhánh **`main`**. Bấm **Save and Deploy**.

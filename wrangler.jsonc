@@ -1,0 +1,10 @@
+// Cloudflare Workers static assets: serves public/ as the site (no build step, no Worker script).
+{
+  "name": "veudr-web",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./public",
+    // unknown paths (e.g. empty map tiles) get public/404.html with status 404, not the home page
+    "not_found_handling": "404-page"
+  }
+}
