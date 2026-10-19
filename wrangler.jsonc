@@ -2,6 +2,10 @@
 {
   "name": "veudr-web",
   "compatibility_date": "2025-09-01",
+  // served only at veudr.smlcloud.online (DNS AAAA + Workers Route); keep the account's *.workers.dev
+  // address off, since wrangler turns it on at every deploy unless told otherwise
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
     // unknown paths (e.g. empty map tiles) get public/404.html with status 404, not the home page
