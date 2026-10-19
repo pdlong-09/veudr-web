@@ -1,0 +1,6 @@
+/data/lots/*
+  Content-Type: application/x-protobuf
+  Cache-Control: public, max-age=604800
+
+/sheets/*
+  Cache-Control: public, max-age=604800
