@@ -72,6 +72,10 @@ Có hai cách cài trên dashboard Cloudflare (tài khoản đang quản lý sml
 
 **Cách A, Workers (giao diện mặc định hiện nay):** Workers & Pages → Create → Import a repository → `datrich/veudr-web`. Project name **veudr-web** (phải trùng `name` trong `wrangler.jsonc`), Build command để trống, Deploy command `npx wrangler deploy`. Sau khi deploy: Settings → Domains & Routes → Add → Custom domain → `veudr.smlcloud.online`. Cấu hình nằm ở `wrangler.jsonc` (phục vụ tĩnh thư mục `public/`, đường dẫn không tồn tại trả về `404.html`).
 
+**Cấu hình đang chạy (19/10/2026):** Worker `veudr-web` (Workers static assets). Tên miền dùng **bản ghi DNS AAAA `veudr` → `100::` (Proxied)** cộng **Workers Route `veudr.smlcloud.online/*` → `veudr-web`**, không dùng "Custom domain". Lý do: custom domain được tạo trên dashboard nhưng bản ghi DNS của nó không được phát ra trong hơn 20 phút. Không bật địa chỉ workers.dev.
+
+Kiểm tra trang thật: `BASE=https://veudr.smlcloud.online/ node test_ui.mjs` (34 kiểm tra; ngày 19/10/2026 đạt toàn bộ).
+
 **Cách B, Pages:**
 
 1. **Workers & Pages → Create → Pages → Connect to Git** (hoặc *Import an existing Git repository*). Cấp cho ứng dụng Cloudflare trên GitHub quyền đọc repo `datrich/veudr-web`.

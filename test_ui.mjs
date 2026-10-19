@@ -1,5 +1,6 @@
 // Smoke test of the web app in headless Edge (Chrome DevTools Protocol, no extra packages).
 //   python webapp/serve.py     then     node webapp/test_ui.mjs [screenshot dir]
+//   live site: BASE=https://veudr.smlcloud.online/ node webapp/test_ui.mjs   (EDGE_ARGS="--host-resolver-rules=MAP host ip", several args separated by |)
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -11,7 +12,7 @@ const SHOTS = process.argv[2] || fs.mkdtempSync(path.join(os.tmpdir(), "veudr-sh
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const prof = fs.mkdtempSync(path.join(os.tmpdir(), "edge-veudr-"));
 const edge = spawn(EDGE, ["--headless=new", "--no-first-run", "--no-default-browser-check", `--remote-debugging-port=${CDP}`,
-  `--user-data-dir=${prof}`, "--window-size=1440,900", "about:blank"]);
+  `--user-data-dir=${prof}`, "--window-size=1440,900", ...(process.env.EDGE_ARGS ? process.env.EDGE_ARGS.split("|") : []), "about:blank"]);
 
 let fails = 0;
 const ok = (cond, what) => { console.log(`${cond ? "ok  " : "FAIL"} ${what}`); if (!cond) fails++; };
