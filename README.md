@@ -66,7 +66,7 @@ Bản đồ diễn biến rừng 2020 lấy từ dịch vụ WFS công khai củ
 
 ## Triển khai (đang dùng): GitHub + Cloudflare Pages
 
-Thư mục `webapp/` là repo riêng tư **datrich/veudr-web**. Repo cha `LLM_4_deforest` bỏ qua thư mục này (khai báo trong `.git/info/exclude`). Cloudflare Pages đọc repo và phục vụ thư mục `public/` như trang tĩnh, không cần bước build. Mỗi lần `git push` lên nhánh `main`, Cloudflare tự triển khai lại.
+Thư mục `webapp/` là repo **datrich/veudr-web** (riêng tư, nối với Cloudflare), có bản sao công khai **pdlong-09/veudr-web**. Repo cha `LLM_4_deforest` bỏ qua thư mục này (khai báo trong `.git/info/exclude`). Cloudflare Pages đọc repo và phục vụ thư mục `public/` như trang tĩnh, không cần bước build. Mỗi lần `git push` lên nhánh `main`, Cloudflare tự triển khai lại.
 
 Có hai cách cài trên dashboard Cloudflare (tài khoản đang quản lý smlcloud.online). Repo hỗ trợ cả hai.
 
