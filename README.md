@@ -86,6 +86,19 @@ Cập nhật dữ liệu hoặc mã: chạy lại `build_data.py` hoặc `build_
 
 Giới hạn của Cloudflare Pages cần nhớ: mỗi tệp tối đa 25 MiB, mỗi lần triển khai tối đa 20.000 tệp. Thư mục tile và 1780 ảnh bằng chứng nằm trong giới hạn này. `public/_headers` đặt thời gian cache cho tile và ảnh. `public/404.html` làm cho đường dẫn không tồn tại (tile trống) trả về lỗi 404 thay vì trang chủ.
 
+## Bản thứ hai: veudr.vigil.green (server riêng, nginx)
+
+Cùng nội dung `public/` còn được phục vụ trên server chạy vigil.green, ở tên miền phụ `veudr.vigil.green`. Web vigil.green và các dịch vụ Docker trên server không bị động tới.
+
+- **nginx:** tệp `/etc/nginx/sites-available/veudr`, nghe cổng 80 với `server_name veudr.vigil.green`, gốc `/var/www/veudr/current`. Cloudflare của zone vigil.green đứng trước làm HTTPS, giống vigil.green. Nội dung cấu hình nằm trong `deploy_vps.py`.
+- **Cập nhật:** `VPS_HOST=<ip> VPS_PW=<mật khẩu> python deploy_vps.py`.
+  - Script so MD5 từng tệp và chỉ gửi tệp thay đổi. Lần đầu gửi toàn bộ khoảng 366 MB; sửa mã thì chỉ vài KB.
+  - Mỗi lần tạo một thư mục phiên bản mới trong `/var/www/veudr/releases/` rồi chuyển liên kết `current` trong một bước. Giữ 3 bản gần nhất.
+  - Quay lại bản cũ: `ln -sfn /var/www/veudr/releases/<bản> /var/www/veudr/current`.
+  - Thêm `--nginx` để cài lại cấu hình nginx, `--full` để gửi lại tất cả.
+- **DNS:** trong tài khoản Cloudflare quản lý vigil.green: bản ghi `A veudr → <IP server>`, Proxied.
+- **Kiểm tra:** `BASE=https://veudr.vigil.green/ node test_ui.mjs`. Trước khi DNS có hiệu lực, có thể kiểm tra thẳng server: `BASE=http://veudr.vigil.green/ EDGE_ARGS="--host-resolver-rules=MAP veudr.vigil.green <IP>" node test_ui.mjs`.
+
 ## Các giai đoạn tiếp theo
 
 **Giai đoạn 1 (trang này, chỉ gồm tệp tĩnh)** đang chạy trên Cloudflare Pages như trên, chi phí bằng 0. Trước khi dùng công khai lâu dài, cần kiểm tra điều khoản của ảnh Esri và của bản đồ diễn biến rừng 2020.
