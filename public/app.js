@@ -451,17 +451,20 @@ function flyItem(id) { const f = itemById(id); if (!f) return; go("map"); map.fl
 function fillLotHere(lon, lat) {  // the official lot under the plot, once the tiles at the plot are on screen
   const el = $("#lot-here"); if (!el) return;
   el.innerHTML = `<p class="hint">${tx("Đang tìm lô rừng 2020 tại vị trí này…", "Looking up the 2020 forest lot at this place…")}</p>`;
+  const token = (fillLotHere.token = (fillLotHere.token || 0) + 1);  // a newer lookup (another plot) wins
+  const t0 = Date.now();
   const show = () => {
-    const box = $("#lot-here"); if (!box) return;
+    const box = $("#lot-here"); if (!box || token !== fillLotHere.token) return;
     const qs = lotsAt(lon, lat);
+    // wait (polling, not map events: a flight can be cut short and then no event comes) until the map is still at the plot with its tiles
+    if ((qs == null || map.isMoving() || !map.areTilesLoaded()) && Date.now() - t0 < 20000) { setTimeout(show, 500); return; }
     if (qs == null) { box.innerHTML = `<p class="hint">${tx("Phóng to tới lô để xem lô rừng 2020 tại vị trí này.", "Zoom in to the plot to see the 2020 forest lot at this place.")}</p>`; return; }
     box.innerHTML = qs.length ? `<h4>${tx("Lô rừng 2020 tại vị trí này", "2020 forest lot at this place")} <span class="src">tnr.vnforest.gov.vn</span></h4>${qs.slice(0, 2).map((q) =>
       `<div class="card lotcard"><b>${LOT_CLS[q.cls]?.[1] || ""}</b> · ${esc(q.ldlr || "")} ${esc(LDLR[q.ldlr] || "")}${lotRows(q)}<div class="hint">${lotMeaning(q)}</div></div>`).join("")}`
       : `<h4>${tx("Lô rừng 2020 tại vị trí này", "2020 forest lot at this place")}</h4><p class="hint">${tx("Vị trí nằm ngoài mọi lô lâm nghiệp của bản đồ diễn biến rừng 2020 (bản đồ quốc gia ngầm coi là không phải rừng).",
         "The place lies outside every forestry lot of the 2020 forest-status map (the national map implicitly counts it as not forest).")}</p>`;
   };
-  map.once("idle", show);
-  map.triggerRepaint();
+  setTimeout(show, 300);
 }
 
 // ------------------------------------------------------------------ drawer and lightbox
@@ -1294,7 +1297,6 @@ function applyRoute() {
   if (route === "home") renderHome();
   if (route === "report") renderReport();
   if (docPage) { $(docPage).scrollTop = 0; return; }
-  map.resize();
   if (route === "plots" && arg && plotById(decodeURIComponent(arg))) flyPlot(decodeURIComponent(arg));
 }
 window.addEventListener("hashchange", applyRoute);

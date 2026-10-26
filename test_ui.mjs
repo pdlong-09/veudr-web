@@ -148,7 +148,10 @@ try {
   ok(!VI_UI.test(await js(`document.getElementById("panel-plots").innerText`)), "no Vietnamese UI text left in the list panel");
   await js(`flyPlot(${Q(id)}), true`);
   ok(await until(`document.getElementById("drawer-body").textContent.includes("Step 1 · Check the imagery") && document.getElementById("drawer-body").textContent.includes("Field visit needed")`), "plot dossier in English");
-  ok(await until(`(() => { const t = document.getElementById("lot-here")?.textContent || ""; return t.includes("2020 forest lot at this place") && !t.includes("Looking up"); })()`, 60000), "official lot lookup in English");
+  const lotEn = await until(`(() => { const t = document.getElementById("lot-here")?.textContent || ""; return t.includes("2020 forest lot at this place") && !t.includes("Looking up"); })()`, 60000);
+  if (!lotEn) console.log("      debug:", Q(await js(`({ lot: (document.getElementById("lot-here")?.textContent || "none").slice(0, 120), z: map.getZoom(), route: S.route,
+    hit: map.getLayer("lots-hit") ? map.queryRenderedFeatures({ layers: ["lots-hit"] }).length : -1, center: map.getCenter(), drawer: !document.getElementById("drawer").hidden })`)));
+  ok(lotEn, "official lot lookup in English");
   ok(await js(`toCSV(resultRows()).startsWith("plot_id,farmer,commune")`), "CSV headers in English");
   ok(await js(`dossierHTML([plotById(${Q(id)})]).includes("EUDR screening dossier")`), "dossier in English");
   await js(`closeDrawer(); location.hash = "#/bao-cao"; true`);
@@ -161,9 +164,10 @@ try {
 
   // --- reload resumes the list and the review
   await js(`location.hash = "#/danh-sach", true`);
+  await js(`window.__oldPage = true`);  // the old page also has a (hidden) resume button: wait for the new one
   await cdp("Page.reload");
   await cdp("Page.bringToFront");
-  const resumed = await until(`S.ready === true && document.getElementById("btn-resume") !== null`);
+  const resumed = await until(`!window.__oldPage && S.ready === true && document.getElementById("btn-resume") !== null`);
   if (!resumed) console.log("      debug:", Q(await js(`({ ready: S.ready, route: S.route, hash: location.hash, last: (localStorage.getItem("veudr:last") || "").length,
     resume: document.getElementById("resume").innerHTML.slice(0, 80), emptyHidden: document.getElementById("plots-empty").hidden,
     fatal: document.querySelector(".fatal")?.textContent || "", loaded: map.loaded(), style: map.isStyleLoaded() })`).catch((e) => e.message)), Q(errors));
