@@ -81,8 +81,8 @@ try {
   await js(`document.getElementById("btn-sample").click(), true`);
   ok(await until(`S.list && S.list.plots.length > 500 && !document.getElementById("plots-loaded").hidden && S.route === "plots"`), "sample list loads");
   const L = await js(`(() => { const c = counts(); return { n: S.list.plots.length, skipped: S.list.skipped.length, level: c.level, status: c.status,
-      swapped: S.list.plots.some((p) => p.warn.some((w) => w.includes("đảo"))), dup: S.list.plots.some((p) => p.id === "LO-0010 (2)"),
-      big: S.list.plots.some((p) => p.warn.some((w) => w.includes("4 ha"))), xa: S.list.plots.filter((p) => p.xaAuto).length,
+      swapped: S.list.plots.some((p) => p.warn.some((w) => w.c === "swap")), dup: S.list.plots.some((p) => p.id === "LO-0010 (2)"),
+      big: S.list.plots.some((p) => p.warn.some((w) => w.c === "big")), xa: S.list.plots.filter((p) => p.xaAuto).length,
       match: S.list.plots.filter((p) => p.match).length, sample: S.sampleSet.size,
       off: S.list.plots.filter((p) => p.offc && p.offc[0] + p.offc[1] > 0).length }; })()`);
   console.log("     ", Q(L));
@@ -133,6 +133,32 @@ try {
   await js(`history.back(), true`);
   ok(await until(`S.route === "method"`), "browser back button returns to the previous page");
 
+  // --- English
+  const VI_UI = /(Danh sách|Bản đồ|Trang chủ|Mức ưu tiên|Kiểm tra|Thực địa|lô trong|Chờ xem|Ảnh nền|Lớp sàng lọc|Tải lên)/;
+  await js(`document.querySelector('.lang [data-lang="en"]').click(), true`);
+  ok(await until(`LANG === "en" && document.documentElement.lang === "en" && location.search.includes("lang=en") && document.querySelector('#nav a[data-route="home"]').textContent.trim() === "Home"`), "switch to English");
+  await js(`location.hash = "#/"; true`);
+  ok(await until(`document.querySelector("#page-home h1").textContent.startsWith("Know which plots")`), "home page in English");
+  ok(!VI_UI.test(await js(`document.getElementById("page-home").innerText + " " + document.querySelector(".topbar").innerText`)), "no Vietnamese UI text left on the home page");
+  await js(`location.hash = "#/ban-do"; true`);
+  ok(await until(`S.route === "map" && document.getElementById("legend").textContent.includes("Tree-cover loss after 2020")`), "map legend in English");
+  ok(!VI_UI.test(await js(`document.getElementById("panel-map").innerText`)), "no Vietnamese UI text left in the map panel");
+  await js(`location.hash = "#/danh-sach"; true`);
+  ok(await until(`document.getElementById("funnel").textContent.includes("plots in the list") && document.querySelector("#table th").textContent === "Plot"`), "plot list in English");
+  ok(!VI_UI.test(await js(`document.getElementById("panel-plots").innerText`)), "no Vietnamese UI text left in the list panel");
+  await js(`flyPlot(${Q(id)}), true`);
+  ok(await until(`document.getElementById("drawer-body").textContent.includes("Step 1 · Check the imagery") && document.getElementById("drawer-body").textContent.includes("Field visit needed")`), "plot dossier in English");
+  ok(await until(`(() => { const t = document.getElementById("lot-here")?.textContent || ""; return t.includes("2020 forest lot at this place") && !t.includes("Looking up"); })()`, 60000), "official lot lookup in English");
+  ok(await js(`toCSV(resultRows()).startsWith("plot_id,farmer,commune")`), "CSV headers in English");
+  ok(await js(`dossierHTML([plotById(${Q(id)})]).includes("EUDR screening dossier")`), "dossier in English");
+  await js(`closeDrawer(); location.hash = "#/bao-cao"; true`);
+  ok(await until(`document.querySelector("#page-report h1").textContent.startsWith("Report")`), "report page in English");
+  await js(`location.hash = "#/phuong-phap"; true`);
+  ok(await until(`document.querySelector("#page-method h1").textContent === "Method"`) && !VI_UI.test(await js(`document.getElementById("page-method").innerText`)), "method page in English");
+  await shot("7_english.png");
+  await js(`document.querySelector('.lang [data-lang="vi"]').click(), true`);
+  ok(await until(`LANG === "vi" && document.querySelector("#page-method h1").textContent === "Phương pháp" && document.querySelector('#nav a[data-route="home"]').textContent.trim() === "Trang chủ"`), "switch back to Vietnamese");
+
   // --- reload resumes the list and the review
   await js(`location.hash = "#/danh-sach", true`);
   await cdp("Page.reload");
@@ -155,10 +181,10 @@ try {
   await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
   await js(`location.hash = "#/"; true`); await sleep(800);
   ok(await js(`document.documentElement.scrollWidth <= window.innerWidth && document.getElementById("page-home").scrollWidth <= window.innerWidth`), "no horizontal scroll on phone (home)");
-  await shot("7_mobile_home.png");
+  await shot("8_mobile_home.png");
   await js(`location.hash = "#/danh-sach"; true`); await sleep(1200);
   ok(await js(`document.getElementById("side").scrollWidth <= document.getElementById("side").clientWidth + 1`), "no horizontal scroll on phone (list)");
-  await shot("8_mobile_list.png");
+  await shot("9_mobile_list.png");
 
   ok(errors.length === 0, `no page errors ${errors.length ? Q(errors.slice(0, 5)) : ""}`);
 } catch (e) {

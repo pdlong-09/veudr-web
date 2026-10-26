@@ -4,22 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>vEUDR</title>
-<meta name="description" content="Biết lô nào cần kiểm tra, bỏ qua lô không cần: sàng lọc EUDR cho danh sách lô cà phê Tây Nguyên bằng dữ liệu vệ tinh mở và bản đồ diễn biến rừng 2020. Công cụ hỗ trợ, không phải chứng nhận tuân thủ.">
+<meta name="description" content="Biết lô nào cần kiểm tra, bỏ qua lô không cần: sàng lọc EUDR cho danh sách lô cà phê Tây Nguyên bằng dữ liệu vệ tinh mở và bản đồ diễn biến rừng 2020. Know which plots to check: EUDR screening for coffee plot lists in Vietnam's Central Highlands.">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Text in Vietnamese; data-en holds the English version (swapped by applyStaticLang in app.js). -->
 <header class="topbar">
-  <a class="brand" href="#/"><span class="logo">v</span>EUDR <span class="ver">bản thử</span></a>
-  <nav id="nav" aria-label="Điều hướng chính">
-    <a href="#/" data-route="home">Trang chủ</a>
-    <a href="#/ban-do" data-route="map">Bản đồ</a>
-    <a href="#/danh-sach" data-route="plots">Danh sách lô <span class="cnt" id="nav-n"></span></a>
-    <a href="#/thuc-dia" data-route="field">Thực địa <span class="cnt" id="nav-f"></span></a>
-    <a href="#/bao-cao" data-route="report">Báo cáo</a>
-    <a href="#/phuong-phap" data-route="method">Phương pháp</a>
-    <a href="#/du-lieu" data-route="data">Dữ liệu</a>
+  <a class="brand" href="#/"><span class="logo">v</span>EUDR <span class="ver" data-en="beta">bản thử</span></a>
+  <nav id="nav" aria-label="Điều hướng chính" data-en-aria="Main navigation">
+    <a href="#/" data-route="home"><span data-en="Home">Trang chủ</span></a>
+    <a href="#/ban-do" data-route="map"><span data-en="Map">Bản đồ</span></a>
+    <a href="#/danh-sach" data-route="plots"><span data-en="Plot list">Danh sách lô</span> <span class="cnt" id="nav-n"></span></a>
+    <a href="#/thuc-dia" data-route="field"><span data-en="Field visits">Thực địa</span> <span class="cnt" id="nav-f"></span></a>
+    <a href="#/bao-cao" data-route="report"><span data-en="Report">Báo cáo</span></a>
+    <a href="#/phuong-phap" data-route="method"><span data-en="Method">Phương pháp</span></a>
+    <a href="#/du-lieu" data-route="data"><span data-en="Data">Dữ liệu</span></a>
   </nav>
+  <div class="lang" role="group" aria-label="Ngôn ngữ / Language">
+    <button data-lang="vi" title="Tiếng Việt">VI</button><button data-lang="en" title="English">EN</button>
+  </div>
 </header>
 
 <!-- map workspace: always rendered; document pages are drawn over it -->
@@ -27,39 +31,39 @@
   <aside id="side">
     <!-- Bản đồ -->
     <section id="panel-map" class="panel">
-      <h3>Ảnh nền</h3>
+      <h3 data-en="Base map">Ảnh nền</h3>
       <div class="seg" id="base-seg">
-        <button data-base="map" class="on">Bản đồ</button><button data-base="sat">Vệ tinh mới nhất</button><button data-base="wb">Vệ tinh theo năm</button>
+        <button data-base="map" class="on" data-en="Map">Bản đồ</button><button data-base="sat" data-en="Latest imagery">Vệ tinh mới nhất</button><button data-base="wb" data-en="Imagery by year">Vệ tinh theo năm</button>
       </div>
-      <label class="row" id="wb-row">Bản ảnh Esri Wayback <select id="wb-year"></select></label>
-      <p class="hint">Mốc EUDR là 31/12/2020: chọn bản 13/01/2021 để xem hiện trạng sát mốc. Ngày là ngày phát hành bản ảnh, ngày chụp thực tế có thể sớm hơn.</p>
+      <label class="row" id="wb-row"><span data-en="Esri Wayback release">Bản ảnh Esri Wayback</span> <select id="wb-year"></select></label>
+      <p class="hint" data-en="The EUDR cut-off is 31/12/2020: choose the 13/01/2021 release to see the land close to the cut-off. The date is the release date; the imagery itself may be older.">Mốc EUDR là 31/12/2020: chọn bản 13/01/2021 để xem hiện trạng sát mốc. Ngày là ngày phát hành bản ảnh, ngày chụp thực tế có thể sớm hơn.</p>
 
-      <h3>Lô rừng 2020 <span class="src">tnr.vnforest.gov.vn</span></h3>
-      <label class="row"><span>Hiện ranh giới lô (từ mức phóng 11)</span> <input id="t-lots" type="checkbox" checked></label>
-      <label class="row">Tô màu theo
-        <select id="lots-by"><option value="cls">Nguồn gốc rừng</option><option value="qh">Quy hoạch ba loại rừng</option><option value="none">Chỉ ranh giới</option></select></label>
+      <h3><span data-en="2020 forest lots">Lô rừng 2020</span> <span class="src">tnr.vnforest.gov.vn</span></h3>
+      <label class="row"><span data-en="Show lot outlines (from zoom 11)">Hiện ranh giới lô (từ mức phóng 11)</span> <input id="t-lots" type="checkbox" checked></label>
+      <label class="row"><span data-en="Colour by">Tô màu theo</span>
+        <select id="lots-by"><option value="cls" data-en="Forest origin">Nguồn gốc rừng</option><option value="qh" data-en="Forest planning class">Quy hoạch ba loại rừng</option><option value="none" data-en="Outlines only">Chỉ ranh giới</option></select></label>
       <div id="lots-legend" class="legend"></div>
-      <p class="hint">Bấm vào một lô để xem tiểu khu, khoảnh, lô, loại đất loại rừng, chủ rừng. Nguồn: bản đồ diễn biến rừng năm 2020, tnr.vnforest.gov.vn.</p>
+      <p class="hint" data-en="Click a lot to see its sub-compartment, compartment, lot number, land and forest type and forest owner. Source: 2020 forest-status map, tnr.vnforest.gov.vn.">Bấm vào một lô để xem tiểu khu, khoảnh, lô, loại đất loại rừng, chủ rừng. Nguồn: bản đồ diễn biến rừng năm 2020, tnr.vnforest.gov.vn.</p>
 
-      <h3>Lớp sàng lọc 500 m</h3>
-      <label class="row"><span>Hiện lớp lưới</span> <input id="t-grid" type="checkbox" checked></label>
+      <h3 data-en="500 m screening layer">Lớp sàng lọc 500 m</h3>
+      <label class="row"><span data-en="Show the grid">Hiện lớp lưới</span> <input id="t-grid" type="checkbox" checked></label>
       <div class="modes">
-        <label><input type="radio" name="mode" value="tier" checked> Mức ưu tiên kiểm tra</label>
-        <label><input type="radio" name="mode" value="off"> Hiện trạng rừng 2020 (bản đồ quốc gia)</label>
-        <label><input type="radio" name="mode" value="agree"> Số bản đồ mở gọi là rừng năm 2020</label>
-        <label><input type="radio" name="mode" value="v1v4"> GFC2020 phiên bản 1 so với 4</label>
-        <label><input type="radio" name="mode" value="loss"> Mất tán cây sau 2020</label>
+        <label><input type="radio" name="mode" value="tier" checked> <span data-en="Check priority">Mức ưu tiên kiểm tra</span></label>
+        <label><input type="radio" name="mode" value="off"> <span data-en="2020 forest status (national map)">Hiện trạng rừng 2020 (bản đồ quốc gia)</span></label>
+        <label><input type="radio" name="mode" value="agree"> <span data-en="Open maps that call it forest in 2020">Số bản đồ mở gọi là rừng năm 2020</span></label>
+        <label><input type="radio" name="mode" value="v1v4"> <span data-en="GFC2020 version 1 vs 4">GFC2020 phiên bản 1 so với 4</span></label>
+        <label><input type="radio" name="mode" value="loss"> <span data-en="Tree-cover loss after 2020">Mất tán cây sau 2020</span></label>
       </div>
       <div id="legend" class="legend"></div>
-      <label class="row">Độ đậm <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+      <label class="row"><span data-en="Opacity">Độ đậm</span> <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.6"></label>
 
-      <h3>Lớp khác</h3>
-      <label class="row"><span>Ranh giới xã (sau sáp nhập 2025)</span> <input id="t-communes" type="checkbox"></label>
-      <label class="row"><span>1780 lô nghiên cứu (có nhãn, ảnh bằng chứng)</span> <input id="t-items" type="checkbox" checked></label>
+      <h3 data-en="Other layers">Lớp khác</h3>
+      <label class="row"><span data-en="Commune boundaries (after the 2025 merger)">Ranh giới xã (sau sáp nhập 2025)</span> <input id="t-communes" type="checkbox"></label>
+      <label class="row"><span data-en="1780 study plots (labelled, with evidence sheets)">1780 lô nghiên cứu (có nhãn, ảnh bằng chứng)</span> <input id="t-items" type="checkbox" checked></label>
 
-      <h3>Thống kê theo tỉnh (ranh giới cũ)</h3>
+      <h3 data-en="Statistics by province (old boundaries)">Thống kê theo tỉnh (ranh giới cũ)</h3>
       <select id="prov" class="full">
-        <option value="all">Cả 5 tỉnh</option><option value="daklak">Đắk Lắk</option><option value="daknong">Đắk Nông</option>
+        <option value="all" data-en="All 5 provinces">Cả 5 tỉnh</option><option value="daklak">Đắk Lắk</option><option value="daknong">Đắk Nông</option>
         <option value="gialai">Gia Lai</option><option value="kontum">Kon Tum</option><option value="lamdong">Lâm Đồng</option>
       </select>
       <div id="stats"></div>
@@ -68,49 +72,49 @@
     <!-- Danh sách lô -->
     <section id="panel-plots" class="panel">
       <div id="plots-empty">
-        <h2>Danh sách lô</h2>
-        <p>Tải lên danh sách lô của nông hộ để nhận mức ưu tiên kiểm tra cho từng lô.</p>
-        <label class="file">Chọn tệp danh sách lô (.csv, .geojson)
+        <h2 data-en="Plot list">Danh sách lô</h2>
+        <p data-en="Upload your farmers' plot list to get a check priority for every plot.">Tải lên danh sách lô của nông hộ để nhận mức ưu tiên kiểm tra cho từng lô.</p>
+        <label class="file"><span data-en="Choose a plot list file (.csv, .geojson)">Chọn tệp danh sách lô (.csv, .geojson)</span>
           <input id="file" type="file" accept=".csv,.txt,.geojson,.json,text/csv,application/geo+json,application/json"></label>
         <div class="btns">
-          <button id="btn-sample" class="btn">Dùng danh sách mẫu</button>
-          <a class="btn ghost" href="data/danh_sach_lo_mau.csv" download>Tải tệp CSV mẫu</a>
+          <button id="btn-sample" class="btn" data-en="Use the sample list">Dùng danh sách mẫu</button>
+          <a class="btn ghost" href="data/danh_sach_lo_mau.csv" download data-en="Download the sample CSV">Tải tệp CSV mẫu</a>
         </div>
-        <p class="hint">CSV cần các cột <code>ma_lo</code>, <code>vi_do</code>, <code>kinh_do</code>; có thể thêm <code>ho_dan</code>, <code>xa</code>,
+        <p class="hint" data-en="The CSV needs the columns <code>ma_lo</code> (plot code), <code>vi_do</code> (latitude) and <code>kinh_do</code> (longitude), or <code>id</code>, <code>lat</code>, <code>lon</code>; it may also have <code>ho_dan</code> (farmer), <code>xa</code> (commune) and <code>dien_tich_ha</code> (area). GeoJSON may hold points or polygons, including files in the format submitted to the EUDR information system. Your data is processed only in your browser and is not sent anywhere.">CSV cần các cột <code>ma_lo</code>, <code>vi_do</code>, <code>kinh_do</code>; có thể thêm <code>ho_dan</code>, <code>xa</code>,
           <code>dien_tich_ha</code>. GeoJSON có thể là điểm hoặc đa giác, kể cả tệp theo định dạng nộp cho hệ thống EUDR.
           Dữ liệu chỉ được xử lý trong trình duyệt của bạn, không gửi đi đâu.</p>
         <div id="resume"></div>
       </div>
       <div id="plots-loaded" hidden>
-        <div class="listhead"><b id="list-name"></b><button id="btn-clear" class="link">Đổi danh sách</button></div>
+        <div class="listhead"><b id="list-name"></b><button id="btn-clear" class="link" data-en="Change list">Đổi danh sách</button></div>
         <div id="funnel" class="funnel"></div>
         <div id="levels"></div>
-        <label class="row">Kiểm tra ngẫu nhiên lô mức Trung bình và Thấp
-          <select id="rate"><option value="0.05">5%</option><option value="0.1">10%</option><option value="0.2">20%</option><option value="0">Không</option></select></label>
+        <label class="row"><span data-en="Random check of Medium and Low plots">Kiểm tra ngẫu nhiên lô mức Trung bình và Thấp</span>
+          <select id="rate"><option value="0.05">5%</option><option value="0.1">10%</option><option value="0.2">20%</option><option value="0" data-en="None">Không</option></select></label>
         <div id="issues"></div>
-        <h3>Danh sách</h3>
+        <h3 data-en="List">Danh sách</h3>
         <div class="filters">
-          <select id="f-level"><option value="">Mọi mức</option><option value="cao">Cao</option><option value="tb">Trung bình</option>
-            <option value="thap">Thấp</option><option value="ngoai">Ngoài vùng</option></select>
+          <select id="f-level"><option value="" data-en="All levels">Mọi mức</option><option value="cao" data-en="High">Cao</option><option value="tb" data-en="Medium">Trung bình</option>
+            <option value="thap" data-en="Low">Thấp</option><option value="ngoai" data-en="Outside the area">Ngoài vùng</option></select>
           <select id="f-status"></select>
-          <input id="f-q" placeholder="Tìm mã lô, hộ, xã">
+          <input id="f-q" placeholder="Tìm mã lô, hộ, xã" data-en-ph="Search plot code, farmer, commune">
         </div>
         <div id="table"></div>
-        <p class="hint">Tổng hợp, xuất tệp và in hồ sơ ở trang <a href="#/bao-cao">Báo cáo</a>.</p>
+        <p class="hint" data-en="Summaries, exports and printable dossiers are on the <a href=&quot;#/bao-cao&quot;>Report</a> page.">Tổng hợp, xuất tệp và in hồ sơ ở trang <a href="#/bao-cao">Báo cáo</a>.</p>
       </div>
     </section>
 
     <!-- Thực địa -->
     <section id="panel-field" class="panel">
-      <h2>Kế hoạch thực địa</h2>
-      <p class="hint">Gồm các lô bạn đánh dấu <b>Cần thực địa</b> sau khi xem ảnh, gom theo xã và sắp theo thứ tự đi gần nhất.</p>
-      <label class="row"><span>Thêm các lô mức Cao chưa xem ảnh</span> <input id="f-incl" type="checkbox"></label>
+      <h2 data-en="Field visit plan">Kế hoạch thực địa</h2>
+      <p class="hint" data-en="The plots you marked <b>Field visit needed</b> after the image check, grouped by commune and ordered by the nearest next stop.">Gồm các lô bạn đánh dấu <b>Cần thực địa</b> sau khi xem ảnh, gom theo xã và sắp theo thứ tự đi gần nhất.</p>
+      <label class="row"><span data-en="Add High plots not yet checked on imagery">Thêm các lô mức Cao chưa xem ảnh</span> <input id="f-incl" type="checkbox"></label>
       <div id="field"></div>
     </section>
   </aside>
-  <div id="map" aria-label="Bản đồ"></div>
+  <div id="map" aria-label="Bản đồ" data-en-aria="Map"></div>
   <aside id="drawer" hidden>
-    <button class="close" id="drawer-close" aria-label="Đóng">×</button>
+    <button class="close" id="drawer-close" aria-label="Đóng" data-en-aria="Close">×</button>
     <div id="drawer-body"></div>
   </aside>
 </div>
