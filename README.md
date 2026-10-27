@@ -1,5 +1,8 @@
 # vEUDR (bản thử): biết lô nào cần kiểm tra, bỏ qua lô không cần
 
+> **Phiên bản của Phạm Duy Long** · GitHub [@pdlong-09](https://github.com/pdlong-09) · công bố 27/10/2026  
+> *Version published and maintained by Phạm Duy Long.* Nhận diện và cách kiểm chứng: [SIGNATURE.md](SIGNATURE.md)
+
 Công cụ giúp doanh nghiệp cà phê sàng lọc danh sách lô của nông hộ theo EUDR. Trang không cấp chứng nhận tuân thủ. Nó chỉ ra **lô nào cần kiểm tra**, chuẩn bị bằng chứng vệ tinh và lưu kết quả kiểm tra của từng lô.
 
 ## Các trang
